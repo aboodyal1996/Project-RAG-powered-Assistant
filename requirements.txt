@@ -1,0 +1,9 @@
+langchain
+langchain-community
+langchain-core
+langchain-text-splitters
+langchain-classic
+sentence-transformers
+pymupdf
+gradio
+ollama
