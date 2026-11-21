@@ -15,9 +15,9 @@ A local, privacy-focused **Retrieval-Augmented Generation (RAG)** assistant desi
 Large Language Models (LLMs) often hallucinate or lack access to private, domain-specific data. This project solves that problem by implementing an end-to-end RAG pipeline (`Load → Split → Embed → Store → Retrieve → Generate`) running completely locally using open-source tools.
 
 ### Key Features
-- **Local & Zero-Cost Execution:** Powered by local multilingual embeddings (`HuggingFace`) and lightweight local LLM inference (`Ollama`), ensuring full data privacy and fast execution with no external API fees.
+- **Local & Zero-Cost Execution:** Powered by local multilingual embeddings (`langchain-huggingface`) and lightweight local LLM inference (`Ollama`), ensuring full data privacy and fast execution with no external API fees.
 - **Multilingual Semantic Search:** Uses dense vector representations stored in `InMemoryVectorStore` (`langchain-core`) to retrieve contextually relevant passages in Arabic and English rather than simple keyword matching.
-- **Interactive Web Interface:** Built with `Gradio` for a clean, user-friendly Q&A experience.
+- **Interactive Web Interface:** Built with `Gradio` running locally on `127.0.0.1` for a clean, user-friendly Q&A experience.
 
 ---
 
@@ -25,7 +25,7 @@ Large Language Models (LLMs) often hallucinate or lack access to private, domain
 
 ```text
 +-------------------+      +---------------------+      +-----------------------+
-|   PDF Document    | ---> |  PyMuPDF & Text     | ---> |  HuggingFace          |
+|   PDF Document    | ---> |  PyMuPDF & Text     | ---> |  LangChain-HuggingFace|
 |   (data/notes.pdf)|      |  Splitter (Chunks)  |      |  Multilingual Embeds  |
 +-------------------+      +---------------------+      +-----------------------+
                                                                     |
@@ -35,12 +35,10 @@ Large Language Models (LLMs) often hallucinate or lack access to private, domain
 |   Answer (Gradio) |      |  (Qwen 2.5 - 1.5B)  |      |  (Top-K Search)       |
 +-------------------+      +---------------------+      +-----------------------+
 
-```
-
 ### How It Works
 
-1. **Document Ingestion & Chunking:** `PyMuPDFLoader` extracts text from PDF files, and `RecursiveCharacterTextSplitter` breaks it into overlapping chunks (`chunk_size=500`, `chunk_overlap=50`) to preserve semantic continuity.
-2. **Embedding & Indexing:** Each text chunk is converted into a 384-dimensional vector using `paraphrase-multilingual-MiniLM-L12-v2` and indexed in `InMemoryVectorStore`.
+1. Document Ingestion & Chunking: PyMuPDFLoader extracts text from PDF files, and RecursiveCharacterTextSplitter breaks it into overlapping chunks (chunk_size=500, chunk_overlap=50) to preserve semantic continuity.
+2. Embedding & Indexing: Each text chunk is converted into a 384-dimensional vector using sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 via HuggingFaceEmbeddings and indexed in InMemoryVectorStore.
 3. **Retrieval:** When a user submits a query, it is embedded into the same vector space, and the retriever fetches the top `k=3` most similar document chunks.
 4. **Augmented Generation:** The retrieved chunks are injected into a prompt template alongside the user's question and passed to `Qwen 2.5 (1.5B)` via Ollama to generate a grounded response.
 
@@ -49,9 +47,9 @@ Large Language Models (LLMs) often hallucinate or lack access to private, domain
 ## 🛠️ Tech Stack
 
 * **Language:** Python 3.10+
-* **Orchestration:** LangChain (`langchain`, `langchain-community`, `langchain-core`, `langchain-text-splitters`, `langchain-classic`)
+* **Orchestration:** LangChain (langchain, langchain-community, langchain-core, langchain-text-splitters, langchain-classic)
 * **PDF Parsing:** PyMuPDF (`fitz`)
-* **Embeddings:** Sentence-Transformers (`paraphrase-multilingual-MiniLM-L12-v2`)
+* **Embeddings:** langchain-huggingface & sentence-transformers (paraphrase-multilingual-MiniLM-L12-v2)
 * **Vector Store:** `InMemoryVectorStore` (`langchain-core`)
 * **LLM Inference:** Ollama (`qwen2.5:1.5b`)
 * **Frontend UI:** Gradio
@@ -160,20 +158,3 @@ Below are examples demonstrating the assistant answering questions strictly base
 **Abdulrahman**
 
 * GitHub: [@aboodyal1996](https://github.com/aboodyal1996)
-
-```
-
----
-
-### تذكير بمحتوى ملف `requirements.txt` النهائي ليطابق هذا التحديث:
-تأكد أن ملف `requirements.txt` لديك يحتوي على هذه المكتبات فقط (بدون `chromadb` أو `faiss-cpu`):
-```text
-langchain
-langchain-community
-langchain-core
-langchain-text-splitters
-langchain-classic
-sentence-transformers
-pymupdf
-gradio
-ollama

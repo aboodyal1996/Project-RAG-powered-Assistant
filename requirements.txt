@@ -3,6 +3,7 @@ langchain-community
 langchain-core
 langchain-text-splitters
 langchain-classic
+langchain-huggingface
 sentence-transformers
 pymupdf
 gradio

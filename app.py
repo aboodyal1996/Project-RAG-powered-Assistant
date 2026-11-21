@@ -1,7 +1,7 @@
 import gradio as gr
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_community.llms import Ollama
 from langchain_classic.chains import RetrievalQA
@@ -49,4 +49,4 @@ interface = gr.Interface(
 
 # 6. تشغيل التطبيق
 if __name__ == "__main__":
-    interface.launch()
+  interface.launch(server_name="127.0.0.1")
